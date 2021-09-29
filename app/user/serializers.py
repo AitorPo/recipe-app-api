@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
                 'password': {
                     'write_only': True,
                     'min_length': 5,
-                    'style': {'input_type': 'password'}                        
+                    'style': {'input_type': 'password'}
                 }
         }
 
