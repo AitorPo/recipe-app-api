@@ -5,7 +5,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Tag, Ingredient
+from core.models import Tag, Ingredient, Recipe
 
 from recipe import serializers
 
@@ -40,3 +40,22 @@ class IngredientViewSet(BaseRecipeAttrViewSet):
     """Manage ingredients in the database"""
     queryset = Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
+
+
+# We use ModelViewSet because we want to provide the class with all of the
+# functionalities that a ViewSet can bring to us
+# .list(), .retrieve(), .create()...
+# Using ModelViewSet we don't need to use any mixin
+# We used GenericViewSet before because we only wanted
+# to bring to these classes
+# some functionalities, not all of them. Thats why we used mixins
+class RecipeViewSet(viewsets.ModelViewSet):
+    """Manage recipes in the database"""
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    queryset = Recipe.objects.all()
+    serializer_class = serializers.RecipeSerializer
+
+    def get_queryset(self):
+        """Retrieve the recipes for the authenticated user"""
+        return self.queryset.filter(user=self.request.user)
