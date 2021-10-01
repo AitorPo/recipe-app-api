@@ -71,3 +71,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return serializers.RecipeDetailSerializer
         # Othwerwise, we will return de default serializer defined lines above
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Create a new Recipe obj owned by the user who made the request"""
+        serializer.save(user=self.request.user)
