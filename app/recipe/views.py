@@ -54,8 +54,20 @@ class RecipeViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
     queryset = Recipe.objects.all()
+    # Here we are LISTING data from recipes which returns Recipe objects
     serializer_class = serializers.RecipeSerializer
 
     def get_queryset(self):
         """Retrieve the recipes for the authenticated user"""
         return self.queryset.filter(user=self.request.user)
+
+    # We override this function because we want to RETRIEVE data from 1 recipe
+    # Then we need to get the serializer which does that
+    def get_serializer_class(self):
+        """Return appropiate serializer class"""
+        # If we are retrieving info from one Recipe obj
+        # we will return the appropiate serializer
+        if self.action == 'retrieve':
+            return serializers.RecipeDetailSerializer
+        # Othwerwise, we will return de default serializer defined lines above
+        return self.serializer_class
