@@ -1,7 +1,21 @@
+import uuid
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
                                         PermissionsMixin
 from django.conf import settings
+
+
+def recipe_image_file_path(instance, filename):
+    """Generate file path for new recipe image"""
+    # we separate the string in a list depending on the dot positioning
+    # and we return de last item of that list, the extension
+    extension = filename.split('.')[-1]
+    # randomizes the name of an image adding the extension at the end
+    filename = f'{uuid.uuid4()}.{extension}'
+
+    # helper funtions that make a valid url by joining two strings
+    return os.path.join('uploads/recipe/', filename)
 
 
 class UserManager(BaseUserManager):
@@ -83,6 +97,11 @@ class Recipe(models.Model):
     # to pay attention to the classes declaration
     ingredients = models.ManyToManyField('Ingredient')
     tags = models.ManyToManyField('Tag')
+    # we allow the image to be null (null=True)
+    # we don't use () in recipe_image_file_path because we don't want to call
+    # the function. We just want to make a referente to it and django
+    # will call it behind scene
+    image = models.ImageField(null=True, upload_to=recipe_image_file_path)
 
     def __str__(self):
         return self.title
